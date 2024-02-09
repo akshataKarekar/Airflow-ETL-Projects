@@ -1,0 +1,86 @@
+# import the libraries
+
+from datetime import timedelta
+# The DAG object; we'll need this to instantiate a DAG
+from airflow import DAG
+# Operators; we need this to write tasks!
+from airflow.operators.bash_operator import BashOperator
+# This makes scheduling easy
+from airflow.utils.dates import days_ago
+
+#defining DAG arguments
+
+# You can override them on a per-task basis during operator initialization
+default_args = {
+    'owner': 'Akshata.Karekar',
+    'start_date': days_ago(0),
+    'email': ['akshata.karekar@gmail.com'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+
+# defining the DAG
+
+# define the DAG
+dag = DAG(
+    'ETL_Server_Access_Log_Processing',
+    default_args=default_args,
+    description='ETL Pipeline 2',
+    schedule_interval=timedelta(days=1),
+)
+
+# define the tasks
+
+#define the task named extract_transform_and_load to call the shell script
+#Unzip the file
+unzip_data = BashOperator(
+    task_id="unzip_data",
+    bash_command="tar -xvzf /home/project/tolldata.tgz",
+    dag=dag,
+)
+
+#Extract data from the csv file
+extract_data_from_csv = BashOperator(
+    task_id="extract_data_from_csv",
+    bash_command="cut -d":" -f1,2,3,4 /home/project/vehicle-data.csv > csv_data.txt",
+    dag=dag,
+)
+
+#Extract data from the tsv file
+extract_data_from_tsv = BashOperator(
+    task_id="extract_data_from_csv",
+    bash_command="cut -d":" -f5,6,7 /home/project/tollplaza-data.tsv > tsv_data.csv",
+    dag=dag,
+)
+
+#Extract data from the fixed width file
+extract_data_from_fixed = BashOperator(
+    task_id="extract_data_from_fixed",
+    bash_command="cut -d":" -f6,7 /home/project/payment-data.txt > fixed_width_data.csv",
+    dag=dag,
+)
+
+
+#Combine data from above 3 files
+extract_data_from_fixed = BashOperator(
+    task_id="extract_data_from_fixed",
+    bash_command="paste csv_data.txt tsv_data.csv fixed_width_data.csv > extracted_data.csv",
+    dag=dag,
+)
+
+#Combine data from above 3 files
+transform_data = BashOperator(
+    task_id="extract_data_from_fixed",
+    bash_command="tr -f5 "[a-z]" "[A-Z]"  > /home/project/transformed_data.csv",
+    dag=dag,
+)
+
+# task pipeline
+
+unzip_data > extract_data_from_csv > extract_data_from_tsv > extract_data_from_fixed > consolidate_data > transform_data
+
+
+
