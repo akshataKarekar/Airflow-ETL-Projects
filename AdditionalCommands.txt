@@ -1,0 +1,17 @@
+#Submit the DAG
+ 
+cp  ETL_Server_Access_Log_Processing.py $AIRFLOW_HOME/dags
+ 
+#Submit the shell script to dags folder
+ 
+cp  ETL_Server_Access_Log_Processing.sh $AIRFLOW_HOME/dags
+  
+#Change the permission to read shell script
+  
+cd airflow/dags
+chmod 777 ETL_Server_Access_Log_Processing.sh
+ 
+ 
+#Verify if the DAG is submitted.
+ 
+airflow dags list
