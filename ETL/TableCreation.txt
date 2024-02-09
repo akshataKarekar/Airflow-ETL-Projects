@@ -1,0 +1,22 @@
+Creating Table in postgres using commandline
+
+
+--Start postgres---
+start_postgres
+
+
+--login to PostgreSQL server--
+psql --username=postgres --host=localhost
+
+
+--connect to default DBA
+\c template1
+
+
+--Create the table
+
+create table users(username varchar(50),userid int,homedirectory varchar(100));
+
+
+
+

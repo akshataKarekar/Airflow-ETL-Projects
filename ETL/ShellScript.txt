@@ -1,0 +1,32 @@
+# Extract phase
+
+echo "Extracting data"
+
+# Extract the columns 1 (user name), 2 (user id) and 
+# 6 (home directory path) from /etc/passwd
+
+cut -d":" -f1,3,6 /etc/passwd > extracted-data.txt
+
+# Transform phase
+echo "Transforming data"
+# read the extracted data and replace the colons with commas.
+
+tr ":" "," < extracted-data.txt > transformed-data.csv
+
+
+#verify that the file transformed-data.csv is created, and has the content.
+
+cat transformed-data.csv
+
+
+# Load phase
+echo "Loading data"
+# Send the instructions to connect to 'template1' and
+# copy the file to the table 'users' through command pipeline.
+
+echo "\c template1;\COPY users  FROM '/home/project/transformed-data.csv' DELIMITERS ',' CSV;" | psql --username=postgres --host=localhost
+
+
+#verify that the table users is populated with the data.
+echo '\c template1; \\SELECT * from users;' | psql --username=postgres --host=localhost
+
