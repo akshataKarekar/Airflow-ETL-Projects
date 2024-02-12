@@ -4,4 +4,4 @@ Extract the user name, user id, and home directory path of each user account def
 Save the data into a comma separated (CSV) format.
 Load the data in the csv file into a table in PostgreSQL database.
 
-Data used: UserData.txt
+Data used: extracted-data.txt
